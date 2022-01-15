@@ -27,6 +27,16 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
+
+# CodeBlocks Project files
+*.depend
+*.layout
+*.cbp
+
+# Others
+Cafe/Cache/*.frag
+Cafe/Cache/*.vert
+misc/
+*.ptcl
