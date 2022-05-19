@@ -153,35 +153,6 @@ void Renderer::BeginRender(const math::MTX44& proj, const math::MTX34& view, con
     viewUniformBlock = static_cast<ViewUniformBlock*>(AllocFromDoubleBuffer(sizeof(ViewUniformBlock)));
     if (viewUniformBlock != NULL)
     {
-#ifdef EFT_WIN
-        // Hardcoded, for now
-
-        viewUniformBlock->viewMat = math::MTX44(1, 0, 0,  0,
-                                                0, 1, 0, -1,
-                                                0, 0, 1, -161.97659,
-                                                0, 0, 0,  1);
-        viewUniformBlock->vpMat = math::MTX44(0.0092, 0,       0,      0,
-                                              0,      0.01289, 0,     -0.01289,
-                                              0,      0,      -1.0E-5, 0.00162,
-                                              0,      0,       0,      1);
-        viewUniformBlock->bldMat = math::MTX44::Identity();
-        viewUniformBlock->eyeVec.x = 0.0f;
-        viewUniformBlock->eyeVec.y = 0.0f;
-        viewUniformBlock->eyeVec.z = 1.0f;
-        viewUniformBlock->eyeVec.w = 0.0f;
-        viewUniformBlock->eyePos.x = 0.0f;
-        viewUniformBlock->eyePos.y = 1.0f;
-        viewUniformBlock->eyePos.z = 161.97659f;
-        viewUniformBlock->eyePos.w = 0.0f;
-        viewUniformBlock->depthBufferTexMat.xy() = depthBufferTextureScale;
-        viewUniformBlock->depthBufferTexMat.zw() = depthBufferTextureOffset;
-        viewUniformBlock->frameBufferTexMat.xy() = frameBufferTextureScale;
-        viewUniformBlock->frameBufferTexMat.zw() = frameBufferTextureOffset;
-        viewUniformBlock->viewParam.x = 1.0f;
-        viewUniformBlock->viewParam.y = 100000.0f;
-        viewUniformBlock->viewParam.z = 0.0f;
-        viewUniformBlock->viewParam.w = 0.0f;
-#else
         viewUniformBlock->viewMat = this->view;
         viewUniformBlock->vpMat = viewProj;
         viewUniformBlock->bldMat = billboard;
@@ -198,6 +169,7 @@ void Renderer::BeginRender(const math::MTX44& proj, const math::MTX34& view, con
         viewUniformBlock->viewParam.z = 0.0f;
         viewUniformBlock->viewParam.w = 0.0f;
 
+#ifndef EFT_WIN
         GX2EndianSwap(viewUniformBlock, sizeof(ViewUniformBlock));
         GX2Invalidate(GX2_INVALIDATE_CPU_UNIFORM_BLOCK, viewUniformBlock, sizeof(ViewUniformBlock));
 #endif // EFT_WIN

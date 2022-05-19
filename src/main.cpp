@@ -123,6 +123,27 @@ int main()
 
     printf("Renderer: %s\n", glGetString(GL_RENDERER));
 
+    // Orthographic projection
+    static const nw::math::MTX44 proj(
+        0.0092f, 0.00000f, 0.0f, 0.00000f,
+        0.0000f, 0.01289f, 0.0f, 0.00000f,
+        0.0000f, 0.00000f, 0.0f, 0.00162f,
+        0.0000f, 0.00000f, 0.0f, 1.00000f
+    );
+
+    const nw::math::VEC3 camPos = {
+        0.0f, 1.0f, 161.97659f
+    };
+
+    static const nw::math::MTX34 view(
+        1.0f, 0.0f, 0.0f, -camPos.x,
+        0.0f, 1.0f, 0.0f, -camPos.y,
+        0.0f, 0.0f, 1.0f, -camPos.z
+    );
+
+    const f32 PROJ_NEAR = 1.0f;
+    const f32 PROJ_FAR  = 100000.0f;
+
     u8* ptcl_file_data = NULL;
     u32 ptcl_file_len = 0;
 
@@ -159,7 +180,7 @@ int main()
         g_EftSystem->CalcParticle(true);
 
         // Camera and projection are hardcoded atm
-        g_EftSystem->BeginRender(nw::math::MTX44::Identity(), nw::math::MTX34::Identity(), nw::math::VEC3::Zero(), -1.0f, 1.0f);
+        g_EftSystem->BeginRender(proj, view, camPos, PROJ_NEAR, PROJ_FAR);
 
         for (nw::eft::EmitterInstance* emitter = g_EftSystem->emitterGroups[0]; emitter != NULL; emitter = emitter->next)
             g_EftSystem->RenderEmitter(emitter, true, NULL);
