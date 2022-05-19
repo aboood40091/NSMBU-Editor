@@ -27,12 +27,14 @@ bool WindowInit()
     // Disable resizing
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    // Request OpenGL Core
+    // Request OpenGL v4.4 Compatibility Profile
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-    // Assume double-buffering is already on
+    // Enforce double-buffering
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
     // Create the window instance
     WindowHandle = glfwCreateWindow(960, 720, "TEST", NULL, NULL);
@@ -42,6 +44,7 @@ bool WindowInit()
         return false;
     }
 
+    // Query the Frame Buffer size
     glfwGetFramebufferSize(WindowHandle, &g_WindowWidth, &g_WindowHeight);
 
     // Make context of window current
@@ -57,14 +60,22 @@ bool WindowInit()
         return false;
     }
 
+    // Check clip control extension
+    if (!GLEW_VERSION_4_5 && !GLEW_ARB_clip_control)
+    {
+        glfwTerminate();
+        return false;
+    }
+
+    // Change coordinate-system to be compliant with GX2
+    glClipControl(GL_UPPER_LEFT, GL_NEGATIVE_ONE_TO_ONE);
+
     // Enable scissor test
     glEnable(GL_SCISSOR_TEST);
 
     // Set the default viewport and scissor
     glViewport(0, 0, g_WindowWidth, g_WindowHeight);
     glScissor(0, 0, g_WindowWidth, g_WindowHeight);
-
-    // Depth test is disabled by default in OpenGL
 
     return true;
 }
@@ -135,8 +146,10 @@ int main()
 
     while (!glfwWindowShouldClose(WindowHandle))
     {
+        glDepthMask(GL_TRUE);
+
         glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-        glClearDepth(1.0);
+        glClearDepth(1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         g_EftSystem->BeginFrame();
