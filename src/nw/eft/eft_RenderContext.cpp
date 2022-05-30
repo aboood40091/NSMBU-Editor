@@ -282,7 +282,14 @@ void RenderContext::SetupTexture(const TextureRes* texture, TextureSlot slot, Fr
 
 void RenderContext::SetupTexture(GLuint texture, TextureSlot slot, FragmentTextureLocation samplerLocation)
 {
-    // TODO
+    if (texture == GL_NONE || samplerLocation.location == 0xFFFFFFFF)
+        return;
+
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glBindSampler(slot, nativeTextureSamplers[slot].sampler);
+    glUniform1i(samplerLocation.location, slot);
 }
 
 #else
