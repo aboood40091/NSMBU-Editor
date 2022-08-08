@@ -131,9 +131,9 @@ int main()
         0.0000f, 0.00000f, 0.0f, 1.00000f
     );
 
-    const nw::math::VEC3 camPos = {
+    const nw::math::VEC3 camPos(
         0.0f, 1.0f, 161.97659f
-    };
+    );
 
     static const nw::math::MTX34 view(
         1.0f, 0.0f, 0.0f, -camPos.x,
@@ -161,7 +161,7 @@ int main()
         return 3;
     }
 
-    printf("Current EmitterSet: %s\n", g_EftSystem->resources[0]->emitterSets[g_EftHandle.emitterSet->emitterSetID].name);
+    printf("Current EmitterSet: %s\n", g_EftSystem->GetResource(0)->GetEmitterSetName(g_EftHandle.GetEmitterSet()->GetEmitterSetID()));
 
     u32 timer = 0;
 
@@ -182,7 +182,7 @@ int main()
         // Camera and projection are hardcoded atm
         g_EftSystem->BeginRender(proj, view, camPos, PROJ_NEAR, PROJ_FAR);
 
-        for (nw::eft::EmitterInstance* emitter = g_EftSystem->emitterGroups[0]; emitter != NULL; emitter = emitter->next)
+        for (nw::eft::EmitterInstance* emitter = g_EftSystem->GetEmitterHead(0); emitter != NULL; emitter = emitter->next)
             g_EftSystem->RenderEmitter(emitter, true, NULL);
 
         g_EftSystem->EndRender();
@@ -193,29 +193,29 @@ int main()
         {
             timer += 1;
 
-            if (g_EftHandle.emitterSet->numEmitter == 0)
+            if (!g_EftHandle.GetEmitterSet()->IsAlive())
             {
-                s32 nextEmitterSetId = g_EftHandle.emitterSet->emitterSetID + 1;
+                s32 nextEmitterSetId = g_EftHandle.GetEmitterSet()->GetEmitterSetID() + 1;
                 printf("Next emitterSet id: %d\n", nextEmitterSetId);
 
-                g_EftHandle.emitterSet->Kill();
+                g_EftHandle.GetEmitterSet()->Kill();
                 timer = 0;
 
-                if (nextEmitterSetId == g_EftSystem->resources[0]->resource->numEmitterSet)
+                if (nextEmitterSetId == g_EftSystem->GetResource(0)->GetNumEmitterSet())
                     break;
 
                 assert(g_EftSystem->CreateEmitterSetID(&g_EftHandle, nw::math::MTX34::Identity(), nextEmitterSetId, 0, 0));
             }
 
             if (timer == 5*60) // 5 seconds or effect is over
-                g_EftHandle.emitterSet->Fade();
+                g_EftHandle.GetEmitterSet()->Fade();
         }
 
         glfwSwapBuffers(WindowHandle);
         glfwPollEvents();
     }
 
-    g_EftHandle.emitterSet->Kill();
+    g_EftHandle.GetEmitterSet()->Kill();
     DeInitEftSystem();
 
     FreeFile(ptcl_file_data);
