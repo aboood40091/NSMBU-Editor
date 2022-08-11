@@ -18,15 +18,6 @@ const std::string g_CafePath = g_CWD + "/Cafe";
 const std::string g_CafeCachePath = g_CafePath + "/Cache";
 
 
-int g_WindowWidth = 1;
-int g_WindowHeight = 1;
-
-
-EftHeap g_EftRootHeap;
-nw::eft::System* g_EftSystem = NULL;
-nw::eft::Handle g_EftHandle;
-
-
 ShaderCache::~ShaderCache()
 {
 }

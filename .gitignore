@@ -29,11 +29,17 @@
 # Executables
 *.out
 *.app
+*.exe
+*.elf
+*.rpx
 
 # CodeBlocks Project files
 *.depend
 *.layout
 *.cbp
+
+# Wii U Build files
+build/*
 
 # Others
 Cafe/Cache/*.frag
