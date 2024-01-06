@@ -102,7 +102,9 @@ void Editor::calcEftSystem_() const
 
 void Editor::drawEftSystem_(const nw::math::MTX44& proj, const nw::math::MTX34& view, const nw::math::VEC3& camPos, f32 zNear, f32 zFar) const
 {
-    g_EftSystem->GetRenderer()->SetFrameBufferTexture(rio::Window::getWindowColorBuffer());
+    g_EftSystem->GetRenderer()->SetFrameBufferTexture(rio::Window::instance()->getWindowColorBufferTexture());
+    rio::Window::instance()->updateDepthBufferTexture();
+    g_EftSystem->GetRenderer()->SetDepthTexture(rio::Window::instance()->getWindowDepthBufferTexture());
 
     rio::Shader::setShaderMode(rio::Shader::MODE_UNIFORM_BLOCK);
 
@@ -164,14 +166,14 @@ void Editor::prepare_()
 
     // Foreground layer
     {
-        rio::lyr::Layer* const layer = &const_cast<rio::lyr::Layer&>(*rio::lyr::Renderer::instance()->addLayer("Foreground", 0));
+        rio::lyr::Layer* const layer = const_cast<rio::lyr::Layer*>(rio::lyr::Layer::peelIterator(rio::lyr::Renderer::instance()->addLayer("Foreground", 0)));
 
         layer->addRenderStep("Foreground");
         layer->addDrawMethod(0, { this, &Editor::renderForeground });
     }
     // Background Layer
     {
-        rio::lyr::Layer* const layer = &const_cast<rio::lyr::Layer&>(*rio::lyr::Renderer::instance()->addLayer("Background", 1));
+        rio::lyr::Layer* const layer = const_cast<rio::lyr::Layer*>(rio::lyr::Layer::peelIterator(rio::lyr::Renderer::instance()->addLayer("Background", 1)));
 
         layer->setClearColor({ 0.25f, 0.25f, 0.25f, 1.0f });
         layer->setClearDepth();
